@@ -3,39 +3,20 @@ import { getSubtitles } from "youtube-captions-scraper";
 import { Request, Response } from "express";
 
 function formatString(str: string) {
-  // Remove any leading <br/> tags before the text starts
   str = str.replace(/^<br\s*\/?>/i, "");
-
-  // Replace any tags that are not <br> with an empty string
   str = str.replace(/<(?!br\s*\/?)[^>]+>/gi, "");
-
-  // Split the string into paragraphs using <br> tags as the delimiter
   let paragraphs = str.split(/<br\s*\/?>/gi);
-
-  // Loop through each paragraph and count the number of phrases
   for (let i = 0; i < paragraphs.length; i++) {
     let phrases = paragraphs[i].split(/[.?!]+/g);
     let numPhrases = phrases.filter(Boolean).length;
-
-    // If the paragraph has more than 3 phrases, add a single <br/> tag before and after it
     if (numPhrases > 3) {
       paragraphs[i] = "<br/>" + paragraphs[i] + "<br/>";
     }
   }
-
-  // Join the paragraphs back into a single string
   str = paragraphs.join("<br/>");
-
-  // Replace any tags that are not <br> with an empty string
   str = str.replace(/<(?!br\s*\/?)[^>]+>/gi, "");
-
-  // Replace any groups of more than two <br> tags with exactly two
   str = str.replace(/(<br\s*\/?>){3,}/gi, "<br/><br/>");
-
-  // Replace any remaining groups of two <br> tags with exactly two
   str = str.replace(/(<br\s*\/?>){2,}/gi, "<br/><br/>");
-
-  // Remove any leading or trailing whitespace
   str = str.trim();
 
   return str;
@@ -149,7 +130,7 @@ export default async function handler(req: Request, res: Response) {
                     
                     <Rewritten caption, in first person, in summary format:>\n
                     `;
-        } else if (forCounter == 2) {
+        } else if (forCounter >= 2) {
           const firstChunkString = chunks[counter - 2].join("\n");
           const secondChunkString = chunks[counter - 1].join("\n");
 
